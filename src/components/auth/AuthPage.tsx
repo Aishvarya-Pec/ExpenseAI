@@ -1,7 +1,9 @@
-
 import React, { useState, useEffect } from 'react'
 import { SignIn, SignUp } from '@clerk/clerk-react'
 import { AuthLayout } from './AuthLayout'
+import { LoginForm } from './LoginForm'
+import { RegisterForm } from './RegisterForm'
+
 
 type AuthMode = 'login' | 'register'
 
@@ -10,7 +12,7 @@ interface AuthPageProps {
   mode?: AuthMode
 }
 
-export const AuthPage: React.FC<AuthPageProps> = ({ mode: initialMode = 'login' }) => {
+export const AuthPage: React.FC<AuthPageProps> = ({ mode: initialMode = 'login', onSuccess }) => {
   const [mode, setMode] = useState<AuthMode>(initialMode)
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,6 +21,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode: initialMode = 'login' 
   useEffect(() => {
     setMode(initialMode)
   }, [initialMode])
+
+  const isClerkConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && import.meta.env.VITE_CLERK_PUBLISHABLE_KEY !== 'pk_test_your-clerk-key')
 
   const getTitle = () => {
     switch (mode) {
@@ -43,6 +47,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode: initialMode = 'login' 
   }
 
   const renderForm = () => {
+    // If Clerk is not configured, render local forms
+    if (!isClerkConfigured) {
+      return mode === 'login' ? (
+        <LoginForm onToggleMode={() => setMode('register')} onForgotPassword={() => setMode('login')} onSuccess={onSuccess} />
+      ) : (
+        <RegisterForm onToggleMode={() => setMode('login')} onSuccess={onSuccess} />
+      )
+    }
+
+    // Otherwise, render Clerk widgets
     switch (mode) {
       case 'login':
         return (
