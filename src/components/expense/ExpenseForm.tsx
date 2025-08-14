@@ -6,35 +6,51 @@ import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { categorizeExpense } from '../../utils/aiCategorization';
 import toast from 'react-hot-toast';
+import type { Expense } from '../../types';
 
 interface ExpenseFormProps {
-  onSubmit: (expense: Omit<import('../../types').Expense, 'id' | 'created_at' | 'updated_at'>) => void;
+  onSubmit?: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => void | Promise<void>;
+  onSumbit?: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => void | Promise<void>;
   isLoading?: boolean;
 }
 
-export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, isLoading }) => {
-  const [formData, setFormData] = useState({
+type PaymentMethod = 'card' | 'cash' | 'digital' | 'crypto';
+
+interface ExpenseFormState {
+  title: string;
+  amount: string;
+  category: string;
+  description: string;
+  date: string;
+  payment_method: PaymentMethod;
+  tags: string[];
+}
+
+const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onSumbit, isLoading }) => {
+  const [formData, setFormData] = useState<ExpenseFormState>({
     title: '',
     amount: '',
     category: '',
     description: '',
     date: new Date().toISOString().split('T')[0],
-    payment_method: 'card' as const,
-    tags: [] as string[],
+    payment_method: 'card',
+    tags: [],
   });
 
   const [aiSuggestion, setAiSuggestion] = useState<{
     category: string;
     confidence: number;
+    suggestions?: string[];
   } | null>(null);
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const categories = [
-    'food', 'transport', 'entertainment', 'shopping', 'utilities', 
+    'food', 'transport', 'entertainment', 'shopping', 'utilities',
     'health', 'education', 'other'
   ];
 
-  const paymentMethods = [
+  const paymentMethods: { value: PaymentMethod; label: string; icon: React.ElementType }[] = [
     { value: 'card', label: '💳 Card', icon: CreditCard },
     { value: 'cash', label: '💵 Cash', icon: DollarSign },
     { value: 'digital', label: '📱 Digital', icon: Tag },
@@ -49,7 +65,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, isLoading })
       setIsAnalyzing(true);
       try {
         const suggestion = await categorizeExpense(title, parseFloat(formData.amount));
-        setAiSuggestion(suggestion);
+        setAiSuggestion(suggestion as { category: string; confidence: number; suggestions?: string[] });
         setFormData(prev => ({ ...prev, category: suggestion.category }));
       } catch (error) {
         console.error('AI categorization failed:', error);
@@ -61,7 +77,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, isLoading })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.amount) {
       toast.error('Please fill in all required fields');
       return;
@@ -73,10 +89,18 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, isLoading })
       ai_category: aiSuggestion?.category,
       ai_confidence: aiSuggestion?.confidence,
       is_recurring: false,
-      user_id: 'temp-user-id', // This will be replaced with actual user ID
+      currency: 'USD', // or get from context/user settings
+      user_id: 'temp-user-id', // use snake_case as per Expense type
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
-    onSubmit(expense);
+    const submitHandler = onSubmit ?? onSumbit;
+    if (!submitHandler) {
+      toast.error('No submit handler provided');
+      return;
+    }
+    await submitHandler(expense);
   };
 
   return (
@@ -163,7 +187,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, isLoading })
                     type="button"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => setFormData(prev => ({ ...prev, payment_method: method.value as 'card' | 'cash' | 'digital' | 'crypto' }))}
+                    onClick={() => setFormData(prev => ({ ...prev, payment_method: method.value }))}
                     className={`
                       w-full p-3 rounded-lg text-left transition-all duration-200 flex items-center space-x-3
                       ${formData.payment_method === method.value
@@ -206,7 +230,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, isLoading })
                 AI Insights
               </h4>
               <ul className="space-y-1">
-                {aiSuggestion.suggestions.map((suggestion: string, index: number) => (
+                {aiSuggestion?.suggestions?.map((suggestion: string, index: number) => (
                   <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
                     • {suggestion}
                   </li>
@@ -223,7 +247,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, isLoading })
             >
               {isAnalyzing ? 'Analyzing...' : 'Add Expense'}
             </Button>
-            
+
             <Button
               type="button"
               variant="secondary"
@@ -238,3 +262,5 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, isLoading })
     </Card>
   );
 };
+
+export default ExpenseForm;

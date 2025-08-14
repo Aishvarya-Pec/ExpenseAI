@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+
+import React, { useState, useEffect } from 'react'
 import { SignIn, SignUp } from '@clerk/clerk-react'
 import { AuthLayout } from './AuthLayout'
 
@@ -6,10 +7,18 @@ type AuthMode = 'login' | 'register'
 
 interface AuthPageProps {
   onSuccess?: () => void
+  mode?: AuthMode
 }
 
-export const AuthPage: React.FC<AuthPageProps> = ({ onSuccess }) => {
-  const [mode, setMode] = useState<AuthMode>('login')
+export const AuthPage: React.FC<AuthPageProps> = ({ mode: initialMode = 'login' }) => {
+  const [mode, setMode] = useState<AuthMode>(initialMode)
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+  // Update mode when prop changes
+  useEffect(() => {
+    setMode(initialMode)
+  }, [initialMode])
 
   const getTitle = () => {
     switch (mode) {
@@ -40,19 +49,26 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSuccess }) => {
           <SignIn
             appearance={{
               elements: {
-                formButtonPrimary: 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700',
-                card: 'bg-white dark:bg-gray-800 shadow-xl',
-                headerTitle: 'text-gray-900 dark:text-white',
-                headerSubtitle: 'text-gray-600 dark:text-gray-400',
-                socialButtonsBlockButton: 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700',
-                formFieldInput: 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white',
-                formFieldLabel: 'text-gray-700 dark:text-gray-300',
-                footerActionLink: 'text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300',
+              
+                formButtonPrimary: 'bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold',
+                card: 'bg-gray-900 border border-yellow-500/20 shadow-2xl',
+                headerTitle: 'text-white',
+                headerSubtitle: 'text-gray-300',
+                socialButtonsBlockButton: 'border border-yellow-500/30 hover:bg-yellow-500/10 text-white',
+                formFieldInput: 'border-yellow-500/30 bg-black/50 text-white placeholder-gray-400 focus:border-yellow-500',
+                formFieldLabel: 'text-gray-300',
+                footerActionLink: 'text-yellow-400 hover:text-yellow-300',
+                dividerLine: 'bg-yellow-500/20',
+                dividerText: 'text-gray-400',
+                formFieldInputShowPasswordButton: 'text-yellow-400 hover:text-yellow-300',
+                identityPreviewText: 'text-gray-300',
+                identityPreviewEditButton: 'text-yellow-400 hover:text-yellow-300',
               }
             }}
-            afterSignInUrl="/dashboard"
-            signUpUrl="/auth?mode=register"
-            redirectUrl="/dashboard"
+
+            afterSignInUrl="#dashboard"
+            signUpUrl="#signup"
+            redirectUrl="#dashboard"
           />
         )
       case 'register':
@@ -60,19 +76,26 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSuccess }) => {
           <SignUp
             appearance={{
               elements: {
-                formButtonPrimary: 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700',
-                card: 'bg-white dark:bg-gray-800 shadow-xl',
-                headerTitle: 'text-gray-900 dark:text-white',
-                headerSubtitle: 'text-gray-600 dark:text-gray-400',
-                socialButtonsBlockButton: 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700',
-                formFieldInput: 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white',
-                formFieldLabel: 'text-gray-700 dark:text-gray-300',
-                footerActionLink: 'text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300',
+               
+                formButtonPrimary: 'bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-semibold',
+                card: 'bg-gray-900 border border-yellow-500/20 shadow-2xl',
+                headerTitle: 'text-white',
+                headerSubtitle: 'text-gray-300',
+                socialButtonsBlockButton: 'border border-yellow-500/30 hover:bg-yellow-500/10 text-white',
+                formFieldInput: 'border-yellow-500/30 bg-black/50 text-white placeholder-gray-400 focus:border-yellow-500',
+                formFieldLabel: 'text-gray-300',
+                footerActionLink: 'text-yellow-400 hover:text-yellow-300',
+                dividerLine: 'bg-yellow-500/20',
+                dividerText: 'text-gray-400',
+                formFieldInputShowPasswordButton: 'text-yellow-400 hover:text-yellow-300',
+                identityPreviewText: 'text-gray-300',
+                identityPreviewEditButton: 'text-yellow-400 hover:text-yellow-300',
               }
             }}
-            afterSignUpUrl="/dashboard"
-            signInUrl="/auth?mode=login"
-            redirectUrl="/dashboard"
+
+            afterSignUpUrl="#dashboard"
+            signInUrl="#signin"
+            redirectUrl="#dashboard"
           />
         )
       default:
@@ -86,12 +109,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onSuccess }) => {
         {renderForm()}
       </div>
       <div className="text-center mt-6">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+       
+        <p className="text-sm text-gray-400">
           {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
           <button
             type="button"
             onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
-            className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition-colors"
+          
+            className="text-yellow-400 hover:text-yellow-300 font-medium transition-colors"
           >
             {mode === 'login' ? 'Sign up' : 'Sign in'}
           </button>

@@ -3,20 +3,18 @@ import { motion } from 'framer-motion';
 import { PlusCircle, TrendingUp, DollarSign, Target } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { ExpenseForm } from '../expense/ExpenseForm';
+import ExpenseForm from '../expense/ExpenseForm';
 import { ExpenseList } from '../expense/ExpenseList';
 import { Analytics } from './Analytics';
 import { BudgetTracker } from './BudgetTracker';
 import { getSpendingInsights } from '../../utils/aiCategorization';
 import toast from 'react-hot-toast';
 import type { Expense } from '../../types';
-
 export const Dashboard: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'expenses' | 'analytics' | 'budget'>('overview');
-
   // Mock data - in production, this would come from your backend API
   useEffect(() => {
     const mockExpenses: Expense[] = [
@@ -55,14 +53,11 @@ export const Dashboard: React.FC = () => {
     ];
     setExpenses(mockExpenses);
   }, []);
-
   const totalSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const thisMonthSpent = expenses
     .filter(expense => new Date(expense.date).getMonth() === new Date().getMonth())
     .reduce((sum, expense) => sum + expense.amount, 0);
-
   const insights = getSpendingInsights(expenses);
-
   const handleAddExpense = async (expenseData: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => {
     setIsLoading(true);
     try {
@@ -85,7 +80,6 @@ export const Dashboard: React.FC = () => {
       setIsLoading(false);
     }
   };
-
   const handleDeleteExpense = async (id: string) => {
     try {
       setExpenses(prev => prev.filter(expense => expense.id !== id));
@@ -94,19 +88,17 @@ export const Dashboard: React.FC = () => {
       toast.error('Failed to delete expense');
     }
   };
-
-  const handleEditExpense = (expense: Expense) => {
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleEditExpense = (_expense: Expense) => {
     // TODO: Implement edit functionality
     toast.success('Edit functionality coming soon!');
   };
-
   const tabs = [
     { id: 'overview', label: 'Overview', icon: DollarSign },
     { id: 'expenses', label: 'Expenses', icon: PlusCircle },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'budget', label: 'Budget', icon: Target }
   ];
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Navigation Tabs */}
@@ -130,7 +122,6 @@ export const Dashboard: React.FC = () => {
           </motion.button>
         ))}
       </div>
-
       {/* Tab Content */}
       <motion.div
         key={activeTab}
@@ -155,7 +146,6 @@ export const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </Card>
-
               <Card gradient>
                 <div className="flex items-center justify-between">
                   <div>
@@ -169,7 +159,6 @@ export const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </Card>
-
               <Card gradient>
                 <div className="flex items-center justify-between">
                   <div>
@@ -184,7 +173,6 @@ export const Dashboard: React.FC = () => {
                 </div>
               </Card>
             </div>
-
             {/* AI Insights */}
             {insights.length > 0 && (
               <Card gradient>
@@ -212,7 +200,6 @@ export const Dashboard: React.FC = () => {
                 </div>
               </Card>
             )}
-
             {/* Quick Actions */}
             <div className="flex justify-center">
               <Button
@@ -226,7 +213,6 @@ export const Dashboard: React.FC = () => {
             </div>
           </div>
         )}
-
         {activeTab === 'expenses' && (
           <div className="space-y-8">
             {showAddForm ? (
@@ -248,7 +234,6 @@ export const Dashboard: React.FC = () => {
                 </Button>
               </div>
             )}
-
             {!showAddForm && (
               <ExpenseList
                 expenses={expenses}
@@ -256,7 +241,6 @@ export const Dashboard: React.FC = () => {
                 onEdit={handleEditExpense}
               />
             )}
-
             {showAddForm && (
               <div className="flex justify-center">
                 <Button
@@ -269,11 +253,9 @@ export const Dashboard: React.FC = () => {
             )}
           </div>
         )}
-
         {activeTab === 'analytics' && (
           <Analytics expenses={expenses} />
         )}
-
         {activeTab === 'budget' && (
           <BudgetTracker expenses={expenses} />
         )}

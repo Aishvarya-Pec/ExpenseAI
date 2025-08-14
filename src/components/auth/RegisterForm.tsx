@@ -3,12 +3,10 @@ import { motion } from 'framer-motion'
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { useAuth } from '../../hooks/useAuth'
-
 interface RegisterFormProps {
   onToggleMode: () => void
   onSuccess?: () => void
 }
-
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSuccess }) => {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -21,7 +19,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSucc
   const [errors, setErrors] = useState<Record<string, string>>({})
   
   const { signUp, loading } = useAuth()
-
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
     
@@ -54,20 +51,17 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSucc
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) return
-    
-    console.log('📝 Register form submitted')
+
     const result = await signUp(formData.email, formData.password, formData.fullName)
-    console.log('📊 Register result:', result)
+   
     if (result.data && !result.error) {
       console.log('✅ Register successful, calling onSuccess')
       onSuccess?.()
-    } else {
-      console.log('❌ Register failed or has error')
+    
     }
   }
 
@@ -78,7 +72,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSucc
       setErrors(prev => ({ ...prev, [field]: '' }))
     }
   }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
@@ -115,7 +108,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSucc
             </motion.p>
           )}
         </div>
-
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Email address
@@ -149,7 +141,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSucc
             </motion.p>
           )}
         </div>
-
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Password
@@ -194,7 +185,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSucc
             </motion.p>
           )}
         </div>
-
         <div>
           <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Confirm Password
@@ -240,7 +230,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSucc
           )}
         </div>
       </div>
-
       <Button
         type="submit"
         className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 flex items-center justify-center space-x-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
@@ -255,7 +244,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSucc
           </>
         )}
       </Button>
-
       <div className="text-center">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Already have an account?{' '}

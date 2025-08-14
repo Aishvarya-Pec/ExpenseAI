@@ -10,6 +10,14 @@ interface BudgetTrackerProps {
   expenses: Expense[];
 }
 
+type Period = 'weekly' | 'monthly' | 'yearly';
+
+interface NewBudgetDraft {
+  category: string;
+  amount: string;
+  period: Period;
+}
+
 export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ expenses }) => {
   const [budgets, setBudgets] = useState<Budget[]>([
     {
@@ -33,10 +41,10 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ expenses }) => {
   ]);
 
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newBudget, setNewBudget] = useState({
+  const [newBudget, setNewBudget] = useState<NewBudgetDraft>({
     category: '',
     amount: '',
-    period: 'monthly' as const
+    period: 'monthly'
   });
 
   // Calculate spent amounts for each budget
@@ -66,10 +74,10 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ expenses }) => {
 
   const getBudgetStatus = (budget: Budget & { spent: number }) => {
     const percentage = (budget.spent / budget.amount) * 100;
-    
-    if (percentage >= 100) return { status: 'exceeded', color: 'red', icon: AlertTriangle };
-    if (percentage >= 80) return { status: 'warning', color: 'yellow', icon: AlertTriangle };
-    return { status: 'good', color: 'green', icon: CheckCircle };
+
+    if (percentage >= 100) return { status: 'exceeded' as const, color: 'red', icon: AlertTriangle };
+    if (percentage >= 80) return { status: 'warning' as const, color: 'yellow', icon: AlertTriangle };
+    return { status: 'good' as const, color: 'green', icon: CheckCircle };
   };
 
   const categories = ['food', 'transport', 'entertainment', 'shopping', 'utilities', 'health', 'education', 'other'];
@@ -131,7 +139,7 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ expenses }) => {
                 </label>
                 <select
                   value={newBudget.period}
-                  onChange={(e) => setNewBudget(prev => ({ ...prev, period: e.target.value as 'weekly' | 'monthly' | 'yearly' }))}
+                  onChange={(e) => setNewBudget(prev => ({ ...prev, period: e.target.value as Period }))}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 >
                   <option value="weekly">Weekly</option>
@@ -178,9 +186,9 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ expenses }) => {
                         {budget.category}
                       </h3>
                     </div>
-                    <StatusIcon 
-                      size={20} 
-                      className={`text-${color}-500`} 
+                    <StatusIcon
+                      size={20}
+                      className={`text-${color}-500`}
                     />
                   </div>
 
@@ -191,7 +199,7 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ expenses }) => {
                         {percentage.toFixed(1)}%
                       </span>
                     </div>
-                    
+
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                       <motion.div
                         initial={{ width: 0 }}
@@ -217,7 +225,7 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ expenses }) => {
                         Spent
                       </div>
                     </div>
-                    
+
                     <div className="text-center">
                       <div className="font-semibold text-gray-900 dark:text-gray-100">
                         ${remaining.toFixed(2)}
@@ -226,7 +234,7 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ expenses }) => {
                         Remaining
                       </div>
                     </div>
-                    
+
                     <div className="text-center">
                       <div className="font-semibold text-gray-900 dark:text-gray-100">
                         ${budget.amount.toFixed(2)}

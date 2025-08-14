@@ -1,15 +1,14 @@
+
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { useAuth } from '../../hooks/useAuth'
-
 interface LoginFormProps {
   onToggleMode: () => void
   onForgotPassword: () => void
   onSuccess?: () => void
 }
-
 export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPassword, onSuccess }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -17,7 +16,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPass
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   
   const { signIn, loading } = useAuth()
-
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {}
     
@@ -36,20 +34,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPass
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) return
-    
-    console.log('🔐 Login form submitted')
+
+   
     const result = await signIn(email, password)
     console.log('📊 Login result:', result)
     if (result.data && !result.error) {
       console.log('✅ Login successful, calling onSuccess')
       onSuccess?.()
-    } else {
-      console.log('❌ Login failed or has error')
+   
     }
   }
 
@@ -89,7 +85,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPass
             </motion.p>
           )}
         </div>
-
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Password
@@ -135,7 +130,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPass
           )}
         </div>
       </div>
-
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -145,7 +139,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPass
           Forgot your password?
         </button>
       </div>
-
       <Button
         type="submit"
         className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 flex items-center justify-center space-x-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
@@ -160,7 +153,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPass
           </>
         )}
       </Button>
-
       <div className="text-center">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Don't have an account?{' '}
