@@ -7,8 +7,10 @@ const isClerkConfigured = () => {
   return key && key !== 'pk_test_your-clerk-key'
 }
 export const useAuth = () => {
-  const { user, isLoaded: userLoaded } = useUser()
-  const { signOut: clerkSignOut } = useClerkAuth()
+  // Only use Clerk hooks if Clerk is configured
+  const clerkConfigured = isClerkConfigured()
+  const { user, isLoaded: userLoaded } = clerkConfigured ? useUser() : { user: null, isLoaded: true }
+  const { signOut: clerkSignOut } = clerkConfigured ? useClerkAuth() : { signOut: async () => {} }
   const [loading, setLoading] = useState(true)
   useEffect(() => {
     if (isClerkConfigured()) {
