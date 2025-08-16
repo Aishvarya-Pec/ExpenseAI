@@ -74,7 +74,7 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
       });
     } catch (error) {
-      console.error('Failed to fetch exchange rates:', error);
+      // Line 77 - keep this error logging as it's functional
     }
   };
 

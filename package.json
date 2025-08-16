@@ -14,13 +14,21 @@
     "@clerk/nextjs": "^6.29.0",
     "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@headlessui/react": "^2.2.7",
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
+    "@types/howler": "^2.2.12",
+    "@types/three": "^0.179.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.12",
+    "gsap": "^3.13.0",
+    "howler": "^2.2.4",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.5.2",
-    "recharts": "^3.1.2"
+    "recharts": "^3.1.2",
+    "three": "^0.179.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",

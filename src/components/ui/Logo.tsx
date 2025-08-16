@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 interface LogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   showText?: boolean;
   className?: string;
   animated?: boolean;
@@ -13,14 +13,16 @@ const sizeClasses = {
   sm: 'w-10 h-10',
   md: 'w-14 h-14',
   lg: 'w-16 h-16',
-  xl: 'w-20 h-20'
+  xl: 'w-20 h-20',
+  xxl: 'w-28 h-28'
 };
 
 const textSizeClasses = {
   sm: 'text-xl',
   md: 'text-2xl',
   lg: 'text-3xl',
-  xl: 'text-4xl'
+  xl: 'text-4xl',
+  xxl: 'text-6xl'
 };
 
 export const Logo: React.FC<LogoProps> = ({

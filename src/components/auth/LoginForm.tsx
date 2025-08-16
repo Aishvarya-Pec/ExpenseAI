@@ -39,13 +39,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPass
 
     if (!validateForm()) return
 
-   
     const result = await signIn(email, password)
-    console.log('📊 Login result:', result)
+
     if (result.data && !result.error) {
-      console.log('✅ Login successful, calling onSuccess')
       onSuccess?.()
-   
     }
   }
 

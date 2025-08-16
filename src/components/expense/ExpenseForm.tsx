@@ -10,24 +10,20 @@ import type { Expense } from '../../types';
 
 interface ExpenseFormProps {
   onSubmit?: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => void | Promise<void>;
-  onSumbit?: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => void | Promise<void>;
+  onClose?: () => void;
   isLoading?: boolean;
 }
 
-type PaymentMethod = 'card' | 'cash' | 'digital' | 'crypto';
-
-interface ExpenseFormState {
-  title: string;
-  amount: string;
-  category: string;
-  description: string;
-  date: string;
-  payment_method: PaymentMethod;
-  tags: string[];
-}
-
-const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onSumbit, isLoading }) => {
-  const [formData, setFormData] = useState<ExpenseFormState>({
+const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onClose, isLoading }) => {
+  const [formData, setFormData] = useState<{
+    title: string;
+    amount: string;
+    category: string;
+    description: string;
+    date: string;
+    payment_method: string;
+    tags: string[];
+  }>({
     title: '',
     amount: '',
     category: '',
@@ -50,7 +46,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onSumbit, isLoading
     'health', 'education', 'other'
   ];
 
-  const paymentMethods: { value: PaymentMethod; label: string; icon: React.ElementType }[] = [
+  const paymentMethods: { value: 'card' | 'cash' | 'digital' | 'crypto'; label: string; icon: React.ElementType }[] = [
     { value: 'card', label: '💳 Card', icon: CreditCard },
     { value: 'cash', label: '💵 Cash', icon: DollarSign },
     { value: 'digital', label: '📱 Digital', icon: Tag },
@@ -68,6 +64,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onSumbit, isLoading
         setAiSuggestion(suggestion as { category: string; confidence: number; suggestions?: string[] });
         setFormData(prev => ({ ...prev, category: suggestion.category }));
       } catch (error) {
+        // Line 67 - keep this error logging as it's functional
         console.error('AI categorization failed:', error);
       } finally {
         setIsAnalyzing(false);
@@ -83,24 +80,30 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onSumbit, isLoading
       return;
     }
 
-    const expense = {
-      ...formData,
-      amount: parseFloat(formData.amount),
-      ai_category: aiSuggestion?.category,
-      ai_confidence: aiSuggestion?.confidence,
-      is_recurring: false,
-      currency: 'USD', // or get from context/user settings
-      user_id: 'temp-user-id', // use snake_case as per Expense type
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const submitHandler = onSubmit ?? onSumbit;
-    if (!submitHandler) {
+    if (!onSubmit) {
       toast.error('No submit handler provided');
       return;
     }
-    await submitHandler(expense);
+
+    // Check if onSubmit exists before calling
+    if (onSubmit) {
+      await onSubmit({
+        ...formData,
+        amount: parseFloat(formData.amount),
+        ai_category: aiSuggestion?.category,
+        ai_confidence: aiSuggestion?.confidence,
+        is_recurring: false,
+        user_id: 'temp-user-id',
+        payment_method: formData.payment_method as 'card' | 'cash' | 'digital' | 'crypto'
+        // Remove line 98:
+        // // Removed currency property as it doesn't exist in Expense type
+      });
+    }
+    
+    // Optionally call onClose after successful submission
+    if (onClose) {
+      onClose();
+    }
   };
 
   return (
@@ -118,7 +121,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onSumbit, isLoading
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="flex items-center space-x-2 text-sm text-indigo-600 dark:text-indigo-400"
+              className="flex items-center space-x-2 text-sm text-yellow-600 dark:text-yellow-400"
             >
               <Sparkles size={16} />
               <span>AI: {Math.round(aiSuggestion.confidence * 100)}% confident</span>
@@ -165,7 +168,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onSumbit, isLoading
                     className={`
                       p-3 rounded-lg text-sm font-medium transition-all duration-200 capitalize
                       ${formData.category === category
-                        ? 'bg-indigo-500 text-white shadow-lg'
+                        ? 'bg-yellow-500 text-black shadow-lg'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }
                     `}
@@ -191,7 +194,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onSumbit, isLoading
                     className={`
                       w-full p-3 rounded-lg text-left transition-all duration-200 flex items-center space-x-3
                       ${formData.payment_method === method.value
-                        ? 'bg-indigo-500 text-white shadow-lg'
+                        ? 'bg-yellow-500 text-black shadow-lg'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }
                     `}
@@ -223,10 +226,10 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, onSumbit, isLoading
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-4 rounded-xl"
+              className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 p-4 rounded-xl"
             >
               <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center">
-                <Sparkles size={16} className="mr-2 text-indigo-500" />
+                <Sparkles size={16} className="mr-2 text-yellow-500" />
                 AI Insights
               </h4>
               <ul className="space-y-1">

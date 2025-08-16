@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+// Add the missing imports
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
 import { Dashboard } from './components/dashboard/Dashboard';
 import { AuthPage } from './components/auth/AuthPage';
 import { LandingPage } from './components/pages/LandingPage';
 import { HowItWorks } from './components/pages/HowItWorks';
-import { Reviews } from './components/pages/Reviews';
+import Reviews from './components/pages/Reviews';
 import { ExpensesPage } from './components/pages/ExpensesPage';
 import GroupExpensesPage from './components/pages/GroupExpensesPage';
 import AnalyticsPage from './components/pages/AnalyticsPage';
@@ -13,14 +14,14 @@ import BudgetsPage from './components/pages/BudgetsPage';
 import { CardsPage } from './components/pages/CardsPage';
 import CalendarPage from './components/pages/CalendarPage';
 import ReportsPage from './components/pages/ReportsPage';
-import SettingsPage from './components/pages/SettingsPage';  // fixed import: default import instead of named
+import SettingsPage from './components/pages/SettingsPage';
 import { Logo } from './components/ui/Logo';
 
 import { useAuth } from './hooks/useAuth';
-import { Toaster } from 'react-hot-toast'; // <- Added missing import for Toaster
+import { Toaster } from 'react-hot-toast';
 
 function App() {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading } = useAuth();
 
   const [currentPage, setCurrentPage] = useState<string>(() => {
     const hash = window.location.hash.slice(1);
@@ -41,6 +42,7 @@ function App() {
   useEffect(() => {
     if (user && (currentPage === 'auth' || currentPage === 'signin' || currentPage === 'signup')) {
       setCurrentPage('dashboard');
+      window.location.hash = '#dashboard';
     }
   }, [user, currentPage]);
 
@@ -50,26 +52,30 @@ function App() {
 
   const handlePageChange = (page: string) => {
     setCurrentPage(page);
+    window.location.hash = `#${page}`;
   };
 
   const handleGetStarted = () => {
     if (user) {
       setCurrentPage('dashboard');
+      window.location.hash = '#dashboard';
     } else {
       setCurrentPage('signin');
+      window.location.hash = '#signin';
     }
   };
 
   const handleLearnMore = () => {
     setCurrentPage('how-it-works');
+    window.location.hash = '#how-it-works';
   };
 
-  const handleViewReviews = () => {
-    setCurrentPage('reviews');
-  };
+
+
 
   const handleAuthSuccess = () => {
     setCurrentPage('dashboard');
+    window.location.hash = '#dashboard';
   };
 
   if (loading) {
@@ -103,50 +109,37 @@ function App() {
     switch (currentPage) {
       case 'landing':
         return (
-          <LandingPage onGetStarted={handleGetStarted} onLearnMore={handleLearnMore} onViewReviews={handleViewReviews} />
+          <LandingPage onGetStarted={handleGetStarted} onLearnMore={handleLearnMore} />
         );
       case 'how-it-works':
         return <HowItWorks />;
       case 'reviews':
         return <Reviews />;
       case 'dashboard':
+        return <Dashboard onPageChange={handlePageChange} />;
       case 'expenses':
+        return <ExpensesPage />;
       case 'groups':
+        return <GroupExpensesPage />;
       case 'analytics':
+        return <AnalyticsPage />;
       case 'budgets':
+        return <BudgetsPage />;
       case 'cards':
+        return <CardsPage />;
       case 'calendar':
+        return <CalendarPage />;
       case 'reports':
+        return <ReportsPage />;
       case 'settings':
-        if (!user) return <AuthPage onSuccess={handleAuthSuccess} mode="login" />;
-
-        return (
- <div className="flex min-h-screen bg-black w-full">
-            <Sidebar currentPage={currentPage} onPageChange={handlePageChange} />
-            <div className="flex-1">
-              <Header user={user} onProfileClick={handleProfileClick} onSignOut={signOut} />
-              <main className="p-6">
-                {currentPage === 'dashboard' && <Dashboard />}
-                {currentPage === 'expenses' && <ExpensesPage />}
-                {currentPage === 'groups' && <GroupExpensesPage />}
-                {currentPage === 'analytics' && <AnalyticsPage />}
-                {currentPage === 'budgets' && <BudgetsPage />}
-                {currentPage === 'cards' && <CardsPage />}
-                {currentPage === 'calendar' && <CalendarPage />}
-                {currentPage === 'reports' && <ReportsPage />}
-                {currentPage === 'settings' && <SettingsPage />}
-              </main>
-            </div>
-          </div>
-        );
+        return <SettingsPage />;
       default:
-        return (
-          <LandingPage onGetStarted={handleGetStarted} onLearnMore={handleLearnMore} onViewReviews={handleViewReviews} />
-        );
+        return <Dashboard onPageChange={handlePageChange} />;
     }
   };
 
   const isPublicPage = ['landing', 'how-it-works', 'reviews'].includes(currentPage);
+  const isAuthenticatedPage = user && !isPublicPage;
 
   return (
     <div className="min-h-screen transition-colors duration-300 bg-gradient-to-br from-black via-gray-900 to-yellow-900">
@@ -167,14 +160,6 @@ function App() {
               </button>
 
               <button
-                onClick={() => setCurrentPage('reviews')}
-                className="text-gray-300 hover:text-yellow-400 font-medium transition-colors"
-                type="button"
-              >
-                Reviews
-              </button>
-
-              <button
                 onClick={handleGetStarted}
                 className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-black px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hover:from-yellow-500 hover:to-yellow-400"
                 type="button"
@@ -186,7 +171,31 @@ function App() {
         </nav>
       )}
 
-      <main>{renderPageContent()}</main>
+      {isAuthenticatedPage ? (
+        <div className="flex h-screen">
+          {/* Sidebar - hidden on settings page */}
+          {currentPage !== 'settings' && (
+            <Sidebar currentPage={currentPage} onPageChange={handlePageChange} />
+          )}
+          
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col">
+            {/* Header */}
+            <Header 
+              onProfileClick={handleProfileClick} 
+              onSignOut={() => handlePageChange('landing')}
+              showSettings={currentPage !== 'settings'}
+            />
+            
+            {/* Page Content */}
+            <main className="flex-1 overflow-auto">
+              {renderPageContent()}
+            </main>
+          </div>
+        </div>
+      ) : (
+        <main>{renderPageContent()}</main>
+      )}
 
       <Toaster
         position="top-right"

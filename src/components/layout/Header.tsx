@@ -25,8 +25,11 @@ interface HeaderProps {
   };
   onProfileClick: () => void;
   onSignOut: () => void;
+  // Add navigation prop
+  onPageChange?: (page: string) => void;
 }
-export const Header: React.FC<HeaderProps> = ({ user, onProfileClick, onSignOut }) => {
+
+export const Header: React.FC<HeaderProps> = ({ user, onProfileClick, onSignOut, onPageChange }) => {
   const { theme, toggleTheme } = useTheme();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -81,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onProfileClick, onSignOut 
     );
   };
 
-  const getNotificationIcon = (type: Notification['type']) => {
+  const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'expense':
         return <DollarSign className="w-4 h-4 text-red-400" />;
@@ -100,13 +103,12 @@ export const Header: React.FC<HeaderProps> = ({ user, onProfileClick, onSignOut 
     <motion.header 
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      
       className="sticky top-0 z-50 bg-black/90 backdrop-blur-lg border-b border-yellow-500/20"
     >
-       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Logo size="lg" animated={true} />
+       <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo - Made smaller */}
+          <Logo size="md" animated={true} key={Date.now()} />
 
           {/* User Info & Actions */}
           
@@ -264,7 +266,11 @@ export const Header: React.FC<HeaderProps> = ({ user, onProfileClick, onSignOut 
 
                       <button
                         onClick={() => {
-                          onProfileClick();
+                          if (onPageChange) {
+                            onPageChange('settings');
+                          } else {
+                            onProfileClick();
+                          }
                           setShowUserMenu(false);
                         }}
                         className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-yellow-500/10 hover:text-yellow-400 flex items-center space-x-2 transition-colors"

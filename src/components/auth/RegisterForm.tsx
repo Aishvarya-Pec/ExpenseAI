@@ -59,9 +59,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode, onSucc
     const result = await signUp(formData.email, formData.password, formData.fullName)
    
     if (result.data && !result.error) {
-      console.log('✅ Register successful, calling onSuccess')
       onSuccess?.()
-    
     }
   }
 

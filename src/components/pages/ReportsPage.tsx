@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Download, FileText, TrendingUp, TrendingDown, PieChart, BarChart3 } from 'lucide-react';
+import { Download, FileText, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 
 interface ReportData {
   period: string;
@@ -137,7 +137,7 @@ export const ReportsPage: React.FC = () => {
         >
           <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-              <PieChart className="w-6 h-6 text-yellow-400" />
+              <TrendingUp className="w-6 h-6 text-yellow-400" />
             </div>
             <div>
               <p className="text-gray-400 text-sm">Net Savings</p>

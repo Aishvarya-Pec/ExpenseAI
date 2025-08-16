@@ -20,15 +20,14 @@ interface SidebarProps {
 }
 
 const navigation = [
- 
   { id: 'dashboard', name: 'Dashboard', icon: Home, color: 'text-yellow-400' },
-  { id: 'expenses', name: 'Expenses', icon: Receipt, color: 'text-green-400' },
-  { id: 'groups', name: 'Group Expenses', icon: Users, color: 'text-purple-400' },
-  { id: 'analytics', name: 'Analytics', icon: PieChart, color: 'text-orange-400' },
-  { id: 'budgets', name: 'Budgets', icon: Target, color: 'text-red-400' },
-  { id: 'cards', name: 'Cards & Accounts', icon: CreditCard, color: 'text-indigo-400' },
-  { id: 'calendar', name: 'Calendar', icon: Calendar, color: 'text-teal-400' },
-  { id: 'reports', name: 'Reports', icon: TrendingUp, color: 'text-emerald-400' },
+  { id: 'expenses', name: 'Expenses', icon: Receipt, color: 'text-yellow-400' },
+  { id: 'groups', name: 'Group Expenses', icon: Users, color: 'text-yellow-400' },
+  { id: 'analytics', name: 'Analytics', icon: PieChart, color: 'text-yellow-400' },
+  { id: 'budgets', name: 'Budgets', icon: Target, color: 'text-yellow-400' },
+  { id: 'cards', name: 'Cards & Accounts', icon: CreditCard, color: 'text-yellow-400' },
+  { id: 'calendar', name: 'Calendar', icon: Calendar, color: 'text-yellow-400' },
+  { id: 'reports', name: 'Reports', icon: TrendingUp, color: 'text-yellow-400' },
 ]
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, isCollapsed = false }) => {
@@ -141,5 +140,5 @@ className={`hidden md:block ${
       </div>
     </motion.aside>
   )
-}      
+}
        

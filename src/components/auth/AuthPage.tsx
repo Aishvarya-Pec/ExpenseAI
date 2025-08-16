@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { SignIn, SignUp } from '@clerk/clerk-react'
-import { AuthLayout } from './AuthLayout'
-import { LoginForm } from './LoginForm'
-import { RegisterForm } from './RegisterForm'
+import React, { useState, useEffect } from 'react';
+import { SignIn, SignUp } from '@clerk/clerk-react';
+import { AuthLayout } from './AuthLayout';
+import { LoginForm } from './LoginForm';
+import { RegisterForm } from './RegisterForm';
 
 
 type AuthMode = 'login' | 'register'
